@@ -210,7 +210,7 @@ export default Component.extend(InViewportMixin, {
         safeSet(this, 'isRefreshDue', false);
 
         let refreshInterval = get(this, 'refresh');
-        if (refreshInterval <= 0) {
+        if (!refreshInterval || refreshInterval <= 0) {
             this.trace('refresh is disabled');
             return;
         }
