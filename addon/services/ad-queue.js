@@ -24,12 +24,14 @@ export default Ember.Service.extend({
         this.get('queue').pushObject(component.get('elementId'));
 
         this._pushCmd(googletag => {
-            let {adId, width, height, elementId} = component.getProperties('adId', 'width', 'height', 'elementId');
-            this.trace(`defining slot: ${adId} @ ${width}x${height} in ${elementId}`);
-            let slot = googletag.defineSlot(adId, [width, height], elementId)
-                .addService(googletag.pubads());
-            component.set('slot', slot);
 
+            let {adId, width, height, elementId, adSizes} = component.getProperties('adId', 'width', 'height', 'elementId', 'adSizes');
+            this.trace(`defining slot: ${adId} @ ${width}x${height} in ${elementId}`);
+            
+            adSizes = adSizes || [width, height];
+
+            let slot = googletag.defineSlot(adId, adSizes, elementId).addService(googletag.pubads());
+            component.set('slot', slot);
             component.addTargeting();
             let targeting = component.get('targeting');
             Object.keys(targeting).forEach( k => {
@@ -89,5 +91,16 @@ export default Ember.Service.extend({
         if (this.get('tracing')) {
             Ember.Logger.log(...arguments);
         }
+    },
+
+
+   // Refresh ads
+    refresh(slot, interval) {
+        console.log("slot:" + slot + " internval:" + interval);
+
+        googletag.cmd.push(function() {
+         googletag.pubads().refresh([gptAdSlots[0]]);
+       });
     }
+   // Refresh ads
 });
